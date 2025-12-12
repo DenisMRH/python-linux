@@ -1,0 +1,4 @@
+https://nonexistent.example.invalid - ошибка: Cannot connect to host nonexistent.example.invalid:443 ssl:default [getaddrinfo failed]
+https://www.google.com - доступен
+https://www.github.com - доступен
+https://example.com - доступен
