@@ -3,7 +3,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from datetime import datetime
 
-# Используем SQLite для простоты развертывания
 SQLALCHEMY_DATABASE_URL = "sqlite:///./news.db"
 
 engine = create_engine(
@@ -19,10 +18,10 @@ class FeedSource(Base):
     __tablename__ = "feed_sources"
     
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, index=True)  # Название источника (например, "Интерфакс")
-    url = Column(String, unique=True)  # URL RSS-ленты
-    category = Column(String, nullable=True)  # Категория (наука, политика, общие)
-    region = Column(String, nullable=True)  # Регион (СПБ, РЗН, общие)
+    name = Column(String, unique=True, index=True) 
+    url = Column(String, unique=True)  
+    category = Column(String, nullable=True)  
+    region = Column(String, nullable=True)  
     
     rules = relationship("FeedRule", back_populates="source")
 
@@ -32,9 +31,9 @@ class FeedRule(Base):
     __tablename__ = "feed_rules"
     
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)  # Название правила (например, "Новости политики")
-    category = Column(String, nullable=True)  # Категория новостей
-    region = Column(String, nullable=True)  # Регион
+    name = Column(String) 
+    category = Column(String, nullable=True) 
+    region = Column(String, nullable=True)  
     source_id = Column(Integer, ForeignKey("feed_sources.id"))
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -51,10 +50,10 @@ class NewsItem(Base):
     description = Column(Text)
     category = Column(String, index=True, nullable=True)
     region = Column(String, index=True, nullable=True)
-    published_at = Column(DateTime, index=True)  # Таймстемп публикации
-    fetched_at = Column(DateTime, default=datetime.utcnow, index=True)  # Таймстемп выгрузки в БД
+    published_at = Column(DateTime, index=True) 
+    fetched_at = Column(DateTime, default=datetime.utcnow, index=True) 
     source_id = Column(Integer, ForeignKey("feed_sources.id"))
-    link = Column(String, unique=True)  # Ссылка на оригинальную новость (для избежания дубликатов)
+    link = Column(String, unique=True) 
     
     source = relationship("FeedSource")
 

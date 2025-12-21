@@ -8,7 +8,6 @@ import models
 
 app = FastAPI(title="News Aggregation System", version="1.0.0")
 
-# Инициализация БД при старте
 database.init_db()
 
 
@@ -20,7 +19,6 @@ def get_db():
         db.close()
 
 
-# ========== Административные эндпоинты для источников ==========
 
 @app.post("/api/admin/sources", response_model=models.FeedSourceResponse)
 def create_source(source: models.FeedSourceCreate, db: Session = Depends(get_db)):
@@ -74,7 +72,6 @@ def delete_source(source_id: int, db: Session = Depends(get_db)):
     return {"message": "Source deleted successfully"}
 
 
-# ========== Административные эндпоинты для правил ==========
 
 @app.post("/api/admin/rules", response_model=models.FeedRuleResponse)
 def create_rule(rule: models.FeedRuleCreate, db: Session = Depends(get_db)):
@@ -140,7 +137,6 @@ def delete_rule(rule_id: int, db: Session = Depends(get_db)):
     return {"message": "Rule deleted successfully"}
 
 
-# ========== Эндпоинты для работы с новостями ==========
 
 @app.get("/api/news", response_model=List[models.NewsItemResponse])
 def get_news(
@@ -154,15 +150,12 @@ def get_news(
     """Получить новости с фильтрами"""
     query = db.query(database.NewsItem)
     
-    # Фильтр по категории
     if category:
         query = query.filter(database.NewsItem.category == category)
     
-    # Фильтр по региону
     if region:
         query = query.filter(database.NewsItem.region == region)
     
-    # Фильтр по времени
     if hours:
         time_threshold = datetime.utcnow() - timedelta(hours=hours)
         query = query.filter(database.NewsItem.published_at >= time_threshold)
@@ -170,10 +163,8 @@ def get_news(
         time_threshold = datetime.utcnow() - timedelta(days=days)
         query = query.filter(database.NewsItem.published_at >= time_threshold)
     
-    # Сортировка по дате публикации (новые сначала)
     query = query.order_by(database.NewsItem.published_at.desc())
     
-    # Лимит
     return query.limit(limit).all()
 
 

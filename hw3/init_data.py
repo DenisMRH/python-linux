@@ -6,12 +6,10 @@
 import database
 from datetime import datetime
 
-# Инициализация БД
 database.init_db()
 
 db = database.SessionLocal()
 
-# Добавляем источники RSS-лент
 sources_data = [
     {"name": "Интерфакс", "url": "https://www.interfax.ru/rss.asp", "category": "общие", "region": None},
     {"name": "Газета Коммерсант", "url": "https://www.kommersant.ru/RSS/main.xml", "category": "общие", "region": None},
@@ -40,7 +38,6 @@ for source_data in sources_data:
 
 db.commit()
 
-# Добавляем примеры правил
 rules_data = [
     {"name": "Новости политики", "category": "политика", "region": None, "source_name": "МК-Политика"},
     {"name": "Новости по Санкт-Петербургу", "category": None, "region": "СПБ", "source_name": "АИФ-СПБ"},

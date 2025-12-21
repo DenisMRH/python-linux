@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-"""
-Скрипт для выгрузки новостей из RSS-лент на основе правил
-Запускается по расписанию через cron
-"""
 
 import feedparser
 import database
@@ -14,7 +10,6 @@ import sys
 def parse_date(date_str):
     """Парсинг даты из RSS"""
     try:
-        # feedparser возвращает struct_time, конвертируем в datetime
         if hasattr(date_str, 'timetuple'):
             return datetime(*date_str.timetuple()[:6])
         return datetime.utcnow()
@@ -35,18 +30,15 @@ def fetch_news_from_source(source: database.FeedSource, db: Session):
         count = 0
         for entry in feed.entries:
             try:
-                # Проверяем, не существует ли уже эта новость
                 existing = db.query(database.NewsItem).filter(
                     database.NewsItem.link == entry.link
                 ).first()
                 
                 if existing:
-                    continue  # Пропускаем дубликаты
+                    continue  
                 
-                # Парсим дату публикации
                 published_at = parse_date(entry.get('published_parsed', datetime.utcnow()))
                 
-                # Создаем новость
                 news_item = database.NewsItem(
                     title=entry.get('title', ''),
                     description=entry.get('description', '') or entry.get('summary', ''),
@@ -77,7 +69,6 @@ def fetch_news_by_rules():
     """Выгрузка новостей на основе правил"""
     db = database.SessionLocal()
     try:
-        # Получаем все активные правила
         rules = db.query(database.FeedRule).all()
         
         if not rules:
@@ -87,7 +78,6 @@ def fetch_news_by_rules():
         total_fetched = 0
         sources_processed = set()
         
-        # Для каждого правила получаем источник и выгружаем новости
         for rule in rules:
             source = db.query(database.FeedSource).filter(
                 database.FeedSource.id == rule.source_id
@@ -97,7 +87,6 @@ def fetch_news_by_rules():
                 print(f"Warning: Source {rule.source_id} not found for rule {rule.name}")
                 continue
             
-            # Обрабатываем каждый источник только один раз
             if source.id not in sources_processed:
                 fetched = fetch_news_from_source(source, db)
                 total_fetched += fetched
